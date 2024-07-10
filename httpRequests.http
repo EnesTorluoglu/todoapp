@@ -1,0 +1,42 @@
+### Get all todos
+GET http://localhost:3000/api/todos
+Accept: application/json
+
+### Get a single todo by ID
+GET http://localhost:3000/api/todos/668f067b894dac80b2a6d3b1
+Accept: application/json
+
+### Create a new todo
+POST http://localhost:3000/api/todos
+Content-Type: application/json
+
+{
+  "name": "Shopping",
+  "description": "buy bread and eggs",
+  "dueDate": "2024-07-15T00:00:00.000Z",
+  "completed": false,
+  "priority": "High"
+}
+
+### Update an existing todo
+PUT http://localhost:3000/api/todos/668f067b894dac80b2a6d3b1
+Content-Type: application/json
+
+{
+  "name": "go to hiking",
+  "description": "go hiking somewhere out of city",
+  "dueDate": "2024-09-01T00:00:00.000Z",
+  "completed": false,
+  "priority": "Low"
+}
+
+### Partially update an existing todo
+PATCH http://localhost:3000/api/todos/668f067b894dac80b2a6d3b1
+Content-Type: application/json
+
+{
+  "completed": true
+}
+
+### Delete a todo
+DELETE http://localhost:3000/api/todos/668f05e5894dac80b2a6d3ae
