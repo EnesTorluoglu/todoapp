@@ -1,26 +1,48 @@
+### User registeration
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+  "username": "user3",
+  "password": "testpassword3"
+}
+
+### User login
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+  "username": "user2",
+  "password": "testpassword2"
+}
+
 ### Get all todos
 GET http://localhost:3000/api/todos
 Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjkwZjExODY5MWIzMzk1MDdjOWNlZmUiLCJpYXQiOjE3MjA3NzU1NDYsImV4cCI6MTcyMDc3OTE0Nn0.gOWyObeygbf7l7m2EBidv1LKICD8KekaOUeWNpvt4aQ
 
 ### Get a single todo by ID
-GET http://localhost:3000/api/todos/668f067b894dac80b2a6d3b1
+GET http://localhost:3000/api/todos/6690f332e0d53593a9c3acef
 Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjkwZjExODY5MWIzMzk1MDdjOWNlZmUiLCJpYXQiOjE3MjA3NzU1NDYsImV4cCI6MTcyMDc3OTE0Nn0.gOWyObeygbf7l7m2EBidv1LKICD8KekaOUeWNpvt4aQ
 
 ### Create a new todo
 POST http://localhost:3000/api/todos
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjkwZjE5MDY5MWIzMzk1MDdjOWNmMDEiLCJpYXQiOjE3MjA3NzUwNTcsImV4cCI6MTcyMDc3ODY1N30.P3dwPXiNQD5_Op55fU7XV-dHILwuyOrC46vHl3zAbck
 
 {
-  "name": "Shopping",
-  "description": "buy bread and eggs",
+  "name": "take dog to walk",
+  "description": "1234",
   "dueDate": "2024-07-15T00:00:00.000Z",
   "completed": false,
-  "priority": "High"
+  "priority": "Low"
 }
 
 ### Update an existing todo
 PUT http://localhost:3000/api/todos/668f067b894dac80b2a6d3b1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjkwZjE5MDY5MWIzMzk1MDdjOWNmMDEiLCJpYXQiOjE3MjA3NzUwNTcsImV4cCI6MTcyMDc3ODY1N30.P3dwPXiNQD5_Op55fU7XV-dHILwuyOrC46vHl3zAbck
 
 {
   "name": "go to hiking",
@@ -30,13 +52,15 @@ Content-Type: application/json
   "priority": "Low"
 }
 
-### Partially update an existing todo
+### Update an existing todo
 PATCH http://localhost:3000/api/todos/668f067b894dac80b2a6d3b1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjkwZjE5MDY5MWIzMzk1MDdjOWNmMDEiLCJpYXQiOjE3MjA3NzUwNTcsImV4cCI6MTcyMDc3ODY1N30.P3dwPXiNQD5_Op55fU7XV-dHILwuyOrC46vHl3zAbck
 
 {
   "completed": true
 }
 
 ### Delete a todo
-DELETE http://localhost:3000/api/todos/668f05e5894dac80b2a6d3ae
+DELETE http://localhost:3000/api/todos/6690f332e0d53593a9c3acef
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjkwZjExODY5MWIzMzk1MDdjOWNlZmUiLCJpYXQiOjE3MjA3NzU1NDYsImV4cCI6MTcyMDc3OTE0Nn0.gOWyObeygbf7l7m2EBidv1LKICD8KekaOUeWNpvt4aQ
