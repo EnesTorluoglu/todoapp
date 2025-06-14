@@ -359,7 +359,7 @@ app.delete('/api/todos/:id', authenticate, async(req, res) => {
 })
 
 mongoose.
-connect('') /*mongodb key*/
+connect('') /* required : mongodb key*/
 .then(async () => {
     await logMessage('MongoDB Connected');
     console.log('MongoDB Connected')
