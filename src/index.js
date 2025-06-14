@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const ToDo = require('./models/ToDo');
 const User = require('./models/User');
@@ -9,13 +10,22 @@ const swaggerSpec = require("./middlewares/swagger");
 
 const app = express();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 
 const SECRET_KEY = "secret";
+const LOGGING_SERVICE_URL = 'http://logging:3003/api/logs';
+
+const logMessage = async (message) => {
+    try {
+        await axios.post(LOGGING_SERVICE_URL, { message });
+    } catch (error) {
+        console.error('Error logging message:', error);
+    }
+};
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -50,6 +60,7 @@ app.post('/api/register', async (req, res) => {
         const { username, password } = req.body;
         const user = new User({ username, password });
         await user.save();
+        await logMessage(`User registered: ${username}`);
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -87,15 +98,19 @@ app.post('/api/login', async (req, res) => {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
         if (!user) {
+            await logMessage(`Login failed for username: ${username}`);
             return res.status(401).json({ message: 'Invalid username' });
         }
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
+            await logMessage(`Login failed for username: ${username}`);
             return res.status(401).json({ message: 'Invalid password' });
         }
         const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+        await logMessage(`User logged in: ${username}`);
         res.status(200).json({ token });
     } catch (err) {
+        await logMessage(`Error logging in user: ${err.message}`);
         res.status(500).json({ message: err.message });
     }
 });
@@ -121,8 +136,10 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/todos', authenticate, async(req, res) => {
     try{
         const todos = await ToDo.find({userId: req.user._id}).sort('dueDate');
+        await logMessage('Fetched todos');
         res.status(200).json(todos);
     }catch(err){
+        await logMessage(`Error fetching todos: ${err.message}`);
         res.status(500).json({message: err.message});
     }
 })
@@ -152,10 +169,13 @@ app.get('/api/todos/:id', authenticate, async(req, res) => {
         const {id} = req.params;
         const todo = await ToDo.findOne({ _id: id, userId: req.user._id });
         if(!todo){
+            await logMessage(`ToDo not found with id ${id}`);
             return res.status(404).json({message: `ToDo not found with id ${id}`});
         }
+        await logMessage('Fetched todo');
         res.status(200).json(todo);
     }catch(err){
+        await logMessage(`Error fetching todos: ${err.message}`);
         res.status(500).json({message: err.message});
     }
 })
@@ -191,9 +211,10 @@ app.post('/api/todos', authenticate, async(req, res) => {
             userId: req.user._id,
         });
         await todo.save();
+        await logMessage(`Created todo: ${todo.name}`);
         res.status(200).json(todo);
     }catch(err) {
-        console.log(err.message);
+        await logMessage(`Error creating todo: ${err.message}`);
         res.status(500).json({message: err.message});
     }
 })
@@ -236,11 +257,13 @@ app.put('/api/todos/:id', authenticate, async(req, res) => {
         const {id} = req.params;
         const todo = await ToDo.findOneAndUpdate({_id: id, userId: req.userId}, req.body, {new: true});
         if(!todo){
+            await logMessage(`ToDo not found with id ${id}`);
             return res.status(404).json({message: `ToDo not found with this id: ${id}`});
         }
+        await logMessage('Updated todo');
         res.status(200).json(todo);
     }catch(err){
-        console.log(err.message);
+        await logMessage(`Error updating todo: ${err.message}`);
         res.status(500).json({message: err.message});
     }
 })
@@ -283,11 +306,13 @@ app.patch('/api/todos/:id', authenticate, async(req, res) => {
         const {id} = req.params;
         const todo = await ToDo.findOneAndUpdate({_id: id, userId: req.userId}, req.body, { new: true });
         if(!todo){
+            await logMessage(`ToDo not found with id ${id}`);
             return res.status(404).json({message: `ToDo not found with this id: ${id}`});
         }
+        await logMessage('Updated todo');
         res.status(200).json(todo);
     }catch(err){
-        console.log(err.message);
+        await logMessage(`Error updating todo: ${err.message}`);
         res.status(500).json({message: err.message});
     }
 })
@@ -322,20 +347,24 @@ app.delete('/api/todos/:id', authenticate, async(req, res) => {
         const {id} = req.params;
         const todo = await ToDo.findOneAndDelete({ _id: id, userId: req.user._id });
         if(!todo){
+            await logMessage(`ToDo not found with id ${id}`);
             return res.status(404).json({message: `ToDo not found with this id: ${id}`});
         }
+        await logMessage(`Deleted todo with id: ${id}`);
         res.status(200).json(todo);
     }catch(err){
-        console.log(err.message);
+        await logMessage(`Error deleting todo: ${err.message}`);
         res.status(500).json({message: err.message});
     }
 })
 
 mongoose.
-connect('mongodb+srv://enestorluoglu:XA8TJ6KjyR7Envcx@democluster.kqywdg8.mongodb.net/ToDo-API?retryWrites=true&w=majority&appName=DemoCluster')
-.then(() => {
+connect('') /*mongodb key*/
+.then(async () => {
+    await logMessage('MongoDB Connected');
     console.log('MongoDB Connected')
-    app.listen(port, () => {
+    app.listen(port, async () => {
+        await logMessage(`Listening on port ${port}...`);
         console.log(`Listening on port ${port}...`)
     });
 }).catch(err => console.log(err));
